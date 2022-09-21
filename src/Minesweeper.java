@@ -9,11 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class Minesweeper implements MouseListener {
-	int dim = 20;
+	final int dim = 20;
+	final double mineRatio = .2;
 	int[][] cells;
 	int[][] shownCells;
 	boolean[][] clickedCells;
-	int numMines = dim * dim / 6;
+	int numMines = (int)(dim * dim * mineRatio);
 	int[] dx8 = { -1, -1, -1, 0, 1, 1, 1, 0 };
 	int[] dy8 = { -1, 0, 1, 1, -1, 0, 1, -1 };
 	int firstClickX;
@@ -22,13 +23,13 @@ public class Minesweeper implements MouseListener {
 
 	private Random generator = new Random();
 
-	JFrame frame = new JFrame("MineSweetPurr");
+	JFrame frame = new JFrame("Minesweeper.");
 	MinePanel panel;
 
 	public Minesweeper() {
-		if (numMines > dim * dim - 25) {
+		if (numMines > dim * dim - 9) {
 			System.out.println("Too many mines!");
-			return;
+			//return;
 		}
 
 		cells = new int[dim][dim];
@@ -52,7 +53,7 @@ public class Minesweeper implements MouseListener {
 			double nextDim = generator.nextDouble() * dim * dim;
 			int x = (int) nextDim / dim;
 			int y = (int) nextDim % dim;
-			if (cells[x][y] == -1 || Math.abs(x - firstClickX) < 3 && Math.abs(y - firstClickY) < 3) {
+			if (cells[x][y] == -1 || Math.abs(x - firstClickX) < 2 && Math.abs(y - firstClickY) < 2) {
 				i--;
 				continue;
 			} else {
@@ -75,7 +76,6 @@ public class Minesweeper implements MouseListener {
 		if (recurse && clickedCells[x][y] && cells[x][y] != 0) {
 			int flagct = 0;
 			int hiddenct = 0;
-			//System.out.println("A");
 			for (int i = 0; i < 8; i++) {
 				if (x + dx8[i] < cells.length && x + dx8[i] >= 0 && y + dy8[i] < cells[0].length && y + dy8[i] >= 0
 						&& shownCells[x + dx8[i]][y + dy8[i]] == -2) {
@@ -83,7 +83,6 @@ public class Minesweeper implements MouseListener {
 					if (!clickedCells[x+dx8[i]][y+dy8[i]]) hiddenct++;
 				}
 			}
-			//System.out.println(flagct + ", " + hiddenct + ", " + cells[x][y]);
 			if (flagct == cells[x][y] && hiddenct > 0) {
 				for (int i = 0; i < 8; i++) {
 					if (x + dx8[i] < cells.length && x + dx8[i] >= 0 && y + dy8[i] < cells[0].length && y + dy8[i] >= 0)
@@ -152,8 +151,6 @@ public class Minesweeper implements MouseListener {
 		for (int i = 0; i < dim; i++) {
 			for (int j = 0; j < dim; j++) {
 				if (cells[i][j] != -1 && !clickedCells[i][j])
-					return false;
-				if (cells[i][j] == -1 && shownCells[i][j] != -2)
 					return false;
 			}
 		}
